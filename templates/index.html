@@ -1,0 +1,122 @@
+<!DOCTYPE html> 
+
+<html>
+<head>
+    <title>Resume Matcher</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css' )}}">
+    
+</head>
+
+<body>
+    <h1> AI Resume Matcher</h1>
+    <p class="subtitle">
+        Analyze your resume against any joob descrription using AI .
+    </p>
+
+<div class="container">
+<form method="POST" enctype="multipart/form-data">
+    {% if error %}
+    <div class="error-box">
+        ⚠️ {{ error }}
+    </div>
+    {% endif %}
+    <h2>📂 Upload Resume (PDF)</h2>
+
+<input
+    type="file"
+    name="resume_file"
+    accept=".pdf">
+
+<br><br>
+
+<p><b>OR</b></p>
+
+<br>
+
+    <h2>📄 Paste Your Resume</h2>
+
+    <textarea
+        name="resume"
+        rows="8"
+        cols="60"></textarea>
+
+    <br><br>
+
+    <h2>📋 Paste Job Description</h2>
+
+    <textarea
+        name="job_desc"
+        rows="8"
+        cols="60"></textarea>
+
+    <br><br>
+
+    <button type="submit">
+        Analyze Resume
+    </button>
+    <br><br>
+
+    {% if score is not none %}
+
+<div class="result-box">
+
+    <div class="score-card">
+        <h2>🎯 ATS match score</h2>
+        <h1 class="score-value"style="color: {{ score_color }};"> 
+            {{ score }}%
+        </h1>
+        <div class="progress-bar">
+            <div
+                class="progress"style="width: {{ score}}%;background: {{ score_color }};">
+            </div>
+        </div>
+
+</div>
+        {% if score >= 80 %}
+        <p class ="excellent"> Excellent Match</p>
+        {% elif score >= 60 %}
+        <p class ="good"> Good Match</p>
+        {% else %}
+        <p class="poor">Needs Improvement</p>
+        {% endif %}
+</div>
+<h3>✅ Matched Skills ({{ matched|length }})</h3>
+
+<div class="skills-box">
+
+    {% for word in matched %}
+        <span class="skill matched">
+            ✅ {{ word.title() }}
+        </span>
+    {% endfor %}
+
+</div>
+
+<br>
+
+<h3>❌ Missing Skills ({{ missing|length }})</h3>
+
+<div class="skills-box">
+
+    {% for word in missing %}
+        <span class="skill missing">
+            ❌ {{ word.title() }}
+        </span>
+    {% endfor %}
+</div>
+<h3> 💡 Resume Suggestions</h3>
+<div class="suggestion-box">
+
+    {% for item in suggestions %}
+        <p>➡️ {{ item }}</p>
+    {% endfor %}
+</div>
+</div>
+
+{% endif %}
+</form>
+
+</div>
+
+</body>
