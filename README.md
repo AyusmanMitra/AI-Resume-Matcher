@@ -68,3 +68,47 @@ AI-Resume-Matcher/
 └── screenshots/
     ├── homepage.png
     └── results.png
+```
+
+## 💻 Run Locally
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/AyusmanMitra/AI-Resume-Matcher.git
+cd AI-Resume-Matcher
+```
+
+### 2. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 3. Run the application
+
+```bash
+python app.py
+```
+
+### 4. Open in your browser
+
+```text
+http://127.0.0.1:5000
+```
+
+## 🔮 Future Improvements
+
+- Semantic/NLP-based resume matching
+- Improved skill and synonym recognition
+- Weighted scoring based on job requirements
+- Experience and education matching
+- More detailed ATS analysis
+- AI-powered resume improvement recommendations
+
+## 👨‍💻 Author
+
+**Ayusman Mitra**
+
+GitHub:  
+https://github.com/AyusmanMitra
