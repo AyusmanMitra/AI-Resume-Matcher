@@ -20,7 +20,6 @@ def extract_text_from_pdf(pdf_file):
 
 
 def calculate_match(resume, job_desc):
-
     skill_aliases = {
         "python": ["python"],
         "java": ["java"],
@@ -63,6 +62,48 @@ def calculate_match(resume, job_desc):
         "teamwork": ["teamwork"]
     }
 
+    skill_categories = {
+        "Programming": [
+            "python", "java", "c", "c++", "javascript",
+            "typescript", "php", "kotlin", "swift"
+        ],
+
+        "Web Development": [
+            "html", "css"
+        ],
+
+        "Frameworks & Libraries": [
+            "flask", "django", "react", "node.js",
+            "angular", "vue", "spring", "spring boot",
+            "bootstrap", "streamlit", "flutter"
+        ],
+
+        "Databases": [
+            "sql", "mysql", "mongodb"
+        ],
+
+        "Cloud & DevOps": [
+            "aws", "docker", "git"
+        ],
+
+        "AI & Data Science": [
+            "machine learning", "deep learning", "data science",
+            "tensorflow", "pytorch", "pandas", "numpy"
+        ],
+
+        "Operating Systems": [
+            "linux"
+        ],
+
+        "APIs": [
+            "rest api"
+        ],
+
+        "Soft Skills": [
+            "communication", "teamwork"
+        ]
+    }
+
     resume_lower = resume.lower()
     job_lower = job_desc.lower()
 
@@ -75,24 +116,20 @@ def calculate_match(resume, job_desc):
 
         return re.search(pattern, text, re.IGNORECASE) is not None
 
-    for skill, aliases in skill_aliases.items():
+    for category, skills in skill_categories.items():
 
-        job_has_skill = any(
-            contains_skill(job_lower, alias)
-            for alias in aliases
-        )
+        for skill in skills:
 
-        if job_has_skill:
+            job_has_skill = contains_skill(job_lower, skill)
 
-            resume_has_skill = any(
-                contains_skill(resume_lower, alias)
-                for alias in aliases
-            )
+            if job_has_skill:
 
-            if resume_has_skill:
-                matched.add(skill)
-            else:
-                missing.add(skill)
+                resume_has_skill = contains_skill(resume_lower, skill)
+
+                if resume_has_skill:
+                    matched.add(skill)
+                else:
+                    missing.add(skill)
 
     total_required = len(matched) + len(missing)
 
@@ -101,7 +138,28 @@ def calculate_match(resume, job_desc):
     else:
         match_score = 0
 
-    return round(match_score, 2), matched, missing
+    category_scores = {}
+
+    for category, skills in skill_categories.items():
+
+        category_required = [
+            skill for skill in skills
+            if skill in matched or skill in missing
+        ]
+
+        if category_required:
+            category_matched = [
+                skill for skill in category_required
+                if skill in matched
+            ]
+
+            category_score = (
+                len(category_matched) / len(category_required)
+            ) * 100
+
+            category_scores[category] = round(category_score, 2)
+
+    return round(match_score, 2), matched, missing, category_scores
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -110,6 +168,7 @@ def home():
     score = None
     matched = None
     missing = None
+    category_scores = {}
     suggestions = []
     error = None
 
@@ -148,7 +207,7 @@ def home():
         # Run matching only if there is no error
         if error is None:
 
-            score, matched, missing = calculate_match(
+            score, matched, missing, category_results = calculate_match(
                 resume,
                 job_desc
             )
@@ -178,6 +237,7 @@ def home():
         score=score,
         matched=matched,
         missing=missing,
+        category_results=category_results,
         suggestions=suggestions,
         score_color=score_color,
         error=error
