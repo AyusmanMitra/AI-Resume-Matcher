@@ -168,7 +168,7 @@ def home():
     score = None
     matched = None
     missing = None
-    category_scores = {}
+    category_results = {}
     suggestions = []
     error = None
 
